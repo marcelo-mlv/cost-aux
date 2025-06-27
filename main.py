@@ -1,9 +1,10 @@
 import sys
-from PyQt6.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QSizePolicy, QSpacerItem, QPushButton
+from PyQt6.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QSizePolicy, QSpacerItem, QPushButton, QMessageBox
 from PyQt6.QtGui import QPixmap
 from PyQt6.QtSvgWidgets import QSvgWidget
-
 from PyQt6.QtCore import Qt
+
+import os
 
 class MainWindow(QWidget):
     def __init__(self):
@@ -38,12 +39,36 @@ class MainWindow(QWidget):
         button_series = QVBoxLayout()
 
         ## Open File Button
-        open_file_button = QPushButton("Open Excel File")
+        open_file_button = QPushButton("Abrir Arquivo Excel")
         open_file_button.setFixedWidth(200)
         button_series.addWidget(open_file_button, alignment=Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
+    
+        # On Click
+        def find_file():
+            files = os.listdir('.')
+            xl_files = [f for f in files if f.endswith('.xlsx')]
+            if not xl_files:
+                msg = QMessageBox(self)
+                msg.setIcon(QMessageBox.Icon.Warning)
+                msg.setWindowTitle("Erro")
+                msg.setText("Nenhum arquivo com formato .xlsx encontrado na pasta raiz.")
+                msg.exec()
+            else:
+                if len(xl_files) == 1:
+                    text = f'Arquivo encontrado com sucesso! Abrindo "{xl_files[0]}"...'
+                else:
+                    text = f'Mais de um arquivo com formato .xlsx encontrado. Abrindo o primeiro...'
+                msg = QMessageBox(self)
+                msg.setIcon(QMessageBox.Icon.Information)
+                msg.setWindowTitle("Aviso")
+                msg.setText(text)
+                msg.exec()
+                os.startfile(xl_files[0])
+
+        open_file_button.clicked.connect(find_file)
 
         ## Edit BOM Button
-        bom_button = QPushButton("Edit BOM")
+        bom_button = QPushButton("Editar BOM")
         bom_button.setFixedWidth(200)
         button_series.addWidget(bom_button, alignment=Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
 
