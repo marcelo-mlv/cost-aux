@@ -1,5 +1,5 @@
 import sys
-from PyQt6.QtWidgets import QApplication, QWidget, QVBoxLayout, QLabel, QSizePolicy, QSpacerItem, QPushButton
+from PyQt6.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QSizePolicy, QSpacerItem, QPushButton
 from PyQt6.QtGui import QPixmap
 from PyQt6.QtSvgWidgets import QSvgWidget
 
@@ -18,7 +18,7 @@ class MainWindow(QWidget):
         layout = QVBoxLayout()
 
         # Main Text
-        main_text = QLabel("Cost Auxilium")
+        main_text = QLabel("America Ya :D")
         font = main_text.font()
         font.setPointSize(12)
         font.setBold(True)
@@ -37,10 +37,12 @@ class MainWindow(QWidget):
         ### Menu Buttons
         button_series = QVBoxLayout()
 
+        ## Open File Button
         open_file_button = QPushButton("Open Excel File")
         open_file_button.setFixedWidth(200)
         button_series.addWidget(open_file_button, alignment=Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
 
+        ## Edit BOM Button
         bom_button = QPushButton("Edit BOM")
         bom_button.setFixedWidth(200)
         button_series.addWidget(bom_button, alignment=Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
@@ -48,6 +50,24 @@ class MainWindow(QWidget):
         layout.addLayout(button_series)
 
         layout.addSpacerItem(QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.MinimumExpanding))
+
+        ### Footer
+        footer_layout = QHBoxLayout()
+
+        ## Footer Logo
+        logo_label = QLabel()
+        pixmap = QPixmap("assets/logo.png")
+        pixmap = pixmap.scaled(50, 50, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
+        logo_label.setPixmap(pixmap)
+        logo_label.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
+        footer_layout.addWidget(logo_label, stretch=2, alignment=Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignVCenter)
+
+        ## Footer Label
+        footer_label = QLabel("Formula ITA - CostAux v1.0")
+        footer_label.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
+        footer_layout.addWidget(footer_label, stretch=5, alignment=Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignVCenter)
+
+        layout.addLayout(footer_layout)
 
         self.setLayout(layout)
 
