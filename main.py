@@ -46,28 +46,7 @@ class MainWindow(QWidget):
         button_series.addWidget(open_file_button, alignment=Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
     
         ### On Click
-        def find_file():
-            files = os.listdir('.')
-            xl_files = [f for f in files if f.endswith('.xlsx')]
-            if not xl_files:
-                msg = QMessageBox(self)
-                msg.setIcon(QMessageBox.Icon.Warning)
-                msg.setWindowTitle("Erro")
-                msg.setText("Nenhum arquivo com formato .xlsx encontrado na pasta raiz.")
-                msg.exec()
-            else:
-                os.startfile(xl_files[0])
-                if len(xl_files) == 1:
-                    text = f'Arquivo encontrado com sucesso! Abrindo "{xl_files[0]}"...'
-                else:
-                    text = f'Mais de um arquivo com formato .xlsx encontrado. Abrindo o primeiro...'
-                msg = QMessageBox(self)
-                msg.setIcon(QMessageBox.Icon.Information)
-                msg.setWindowTitle("Aviso")
-                msg.setText(text)
-                msg.exec()
-
-        open_file_button.clicked.connect(find_file)
+        open_file_button.clicked.connect(self.find_file)
 
         # Edit BOM Button
         bom_button = QPushButton("Editar BOM")
@@ -75,68 +54,7 @@ class MainWindow(QWidget):
         button_series.addWidget(bom_button, alignment=Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
 
         ## On Click
-        def open_bom_window():
-            if self.layout() is not None:
-                QWidget().setLayout(self.layout())
-
-            bom_layout = QVBoxLayout()
-
-            top_bar = QHBoxLayout()
-            
-            # Top Bar
-            ## Return Button
-            return_button = QPushButton("<<")
-            return_button.setFixedWidth(40)
-            return_button.clicked.connect(self.init_ui)
-            top_bar.addWidget(return_button, alignment=Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop)
-
-            ## Main Text
-            bom_label = QLabel("BOM Editor")
-            bom_label.setAlignment(Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignTop)
-            font = bom_label.font()
-            font.setPointSize(16)
-            font.setBold(True)
-            font.setFamily("Consolas")
-            bom_label.setFont(font)
-            top_bar.addWidget(bom_label, stretch=1, alignment=Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignTop)
-
-            top_bar.setContentsMargins(0, 10, 0, 15)
-
-            bom_layout.addLayout(top_bar)
-
-            # View BOM Button
-            view_bom_button = QPushButton("Visualizar BOM")
-            view_bom_button.setContentsMargins(0, 10, 0, 20)
-            bom_layout.addWidget(view_bom_button, alignment=Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignTop)
-
-            # Editar BOM Button
-            edit_bom_button = QPushButton("Editar BOM")
-            edit_bom_button.setContentsMargins(0, 10, 0, 20)
-            bom_layout.addWidget(edit_bom_button, alignment=Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignTop)
-
-            bom_layout.addSpacerItem(QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.MinimumExpanding))
-
-            # Footer
-            footer_layout = QHBoxLayout()
-
-            ## Footer Logo
-            logo_label = QLabel()
-            pixmap = QPixmap("assets/logo.png")
-            pixmap = pixmap.scaled(50, 50, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
-            logo_label.setPixmap(pixmap)
-            logo_label.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
-            footer_layout.addWidget(logo_label, stretch=2, alignment=Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignVCenter)
-
-            ## Footer Label
-            footer_label = QLabel("Formula ITA - CostAux v1.0")
-            footer_label.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
-            footer_layout.addWidget(footer_label, stretch=5, alignment=Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignVCenter)
-
-            bom_layout.addLayout(footer_layout)
-
-            self.setLayout(bom_layout)
-
-        bom_button.clicked.connect(open_bom_window)
+        bom_button.clicked.connect(self.open_bom_window)
 
         layout.addLayout(button_series)
 
@@ -161,6 +79,88 @@ class MainWindow(QWidget):
         layout.addLayout(footer_layout)
 
         self.setLayout(layout)
+
+    def open_bom_window(self):
+        if self.layout() is not None:
+            QWidget().setLayout(self.layout())
+
+        bom_layout = QVBoxLayout()
+
+        top_bar = QHBoxLayout()
+        
+        # Top Bar
+        ## Return Button
+        return_button = QPushButton("<<")
+        return_button.setFixedWidth(40)
+        return_button.clicked.connect(self.init_ui)
+        top_bar.addWidget(return_button, alignment=Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop)
+
+        ## Main Text
+        bom_label = QLabel("BOM Editor")
+        bom_label.setAlignment(Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignTop)
+        font = bom_label.font()
+        font.setPointSize(16)
+        font.setBold(True)
+        font.setFamily("Consolas")
+        bom_label.setFont(font)
+        top_bar.addWidget(bom_label, stretch=1, alignment=Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignTop)
+
+        top_bar.setContentsMargins(0, 10, 0, 15)
+
+        bom_layout.addLayout(top_bar)
+
+        # View BOM Button
+        view_bom_button = QPushButton("Visualizar BOM")
+        view_bom_button.setContentsMargins(0, 10, 0, 20)
+        bom_layout.addWidget(view_bom_button, alignment=Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignTop)
+
+        # Editar BOM Button
+        edit_bom_button = QPushButton("Editar BOM")
+        edit_bom_button.setContentsMargins(0, 10, 0, 20)
+        bom_layout.addWidget(edit_bom_button, alignment=Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignTop)
+
+        bom_layout.addSpacerItem(QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.MinimumExpanding))
+
+        # Footer
+        footer_layout = QHBoxLayout()
+
+        ## Footer Logo
+        logo_label = QLabel()
+        pixmap = QPixmap("assets/logo.png")
+        pixmap = pixmap.scaled(50, 50, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
+        logo_label.setPixmap(pixmap)
+        logo_label.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
+        footer_layout.addWidget(logo_label, stretch=2, alignment=Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignVCenter)
+
+        ## Footer Label
+        footer_label = QLabel("Formula ITA - CostAux v1.0")
+        footer_label.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
+        footer_layout.addWidget(footer_label, stretch=5, alignment=Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignVCenter)
+
+        bom_layout.addLayout(footer_layout)
+
+        self.setLayout(bom_layout)
+
+    def find_file(self):
+        files = os.listdir('.')
+        xl_files = [f for f in files if f.endswith('.xlsx')]
+        if not xl_files:
+            msg = QMessageBox(self)
+            msg.setIcon(QMessageBox.Icon.Warning)
+            msg.setWindowTitle("Erro")
+            msg.setText("Nenhum arquivo com formato .xlsx encontrado na pasta raiz.")
+            msg.exec()
+        else:
+            os.startfile(xl_files[0])
+            if len(xl_files) == 1:
+                text = f'Arquivo encontrado com sucesso! Abrindo "{xl_files[0]}"...'
+            else:
+                text = f'Mais de um arquivo com formato .xlsx encontrado. Abrindo o primeiro...'
+            msg = QMessageBox(self)
+            msg.setIcon(QMessageBox.Icon.Information)
+            msg.setWindowTitle("Aviso")
+            msg.setText(text)
+            msg.exec()
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
