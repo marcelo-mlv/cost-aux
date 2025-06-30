@@ -48,12 +48,12 @@ class MainWindow(QWidget):
         ### On Click
         open_file_button.clicked.connect(self.find_file)
 
-        # Edit BOM Button
+        ## Edit BOM Button
         bom_button = QPushButton("Editar BOM")
         bom_button.setFixedWidth(200)
         button_series.addWidget(bom_button, alignment=Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
 
-        ## On Click
+        ### On Click
         bom_button.clicked.connect(self.open_bom_window)
 
         layout.addLayout(button_series)
@@ -108,16 +108,46 @@ class MainWindow(QWidget):
         top_bar.setContentsMargins(0, 10, 0, 15)
 
         bom_layout.addLayout(top_bar)
-
+        
+        button_series = QVBoxLayout()
+        
         # View BOM Button
         view_bom_button = QPushButton("Visualizar BOM")
         view_bom_button.setContentsMargins(0, 10, 0, 20)
-        bom_layout.addWidget(view_bom_button, alignment=Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignTop)
+        view_bom_button.setFixedWidth(200)
+        button_series.addWidget(view_bom_button, alignment=Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignTop)
 
-        # Editar BOM Button
-        edit_bom_button = QPushButton("Editar BOM")
-        edit_bom_button.setContentsMargins(0, 10, 0, 20)
-        bom_layout.addWidget(edit_bom_button, alignment=Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignTop)
+        ### On Click
+        view_bom_button.clicked.connect(self.view_bom)
+
+        # Add Item Button
+        add_item_button = QPushButton("Adicionar Item ao BOM")
+        add_item_button.setContentsMargins(0, 10, 0, 20)
+        add_item_button.setFixedWidth(200)
+        button_series.addWidget(add_item_button, alignment=Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignTop)
+
+        ### On Click
+        add_item_button.clicked.connect(self.add_item)
+
+        # Remove Item Button
+        remove_item_button = QPushButton("Remover Item do BOM")
+        remove_item_button.setContentsMargins(0, 10, 0, 20)
+        remove_item_button.setFixedWidth(200)
+        button_series.addWidget(remove_item_button, alignment=Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignTop)
+
+        ### On Click
+        remove_item_button.clicked.connect(self.rm_item)
+
+        # Save BOM Button
+        save_bom_button = QPushButton("Salvar BOM em txt")
+        save_bom_button.setContentsMargins(0, 10, 0, 20)
+        save_bom_button.setFixedWidth(200)
+        button_series.addWidget(save_bom_button, alignment=Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignTop)
+
+        ### On Click
+        save_bom_button.clicked.connect(self.save_txt)
+
+        bom_layout.addLayout(button_series)
 
         bom_layout.addSpacerItem(QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.MinimumExpanding))
 
@@ -161,6 +191,19 @@ class MainWindow(QWidget):
             msg.setWindowTitle("Aviso")
             msg.setText(text)
             msg.exec()
+    
+    def save_txt(self):
+        pass
+
+    def add_item(self):
+        pass
+
+    def rm_item(self):
+        pass
+
+    def view_bom(self):
+        pass
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
