@@ -232,25 +232,17 @@ class MainWindow(QWidget):
 
 
     def find_file(self):
-        files = os.listdir('.')
-        xl_files = [f for f in files if f.endswith('.xlsx')]
-        if not xl_files:
-            msg = QMessageBox(self)
+        msg = QMessageBox(self)
+        if not self.filename:
             msg.setIcon(QMessageBox.Icon.Warning)
             msg.setWindowTitle("Erro")
-            msg.setText("Nenhum arquivo com formato .xlsx encontrado na pasta raiz.")
-            msg.exec()
+            msg.setText("Arquivo não definido. Carregue-o antes no menu principal.")
         else:
-            os.startfile(xl_files[0])
-            if len(xl_files) == 1:
-                text = f'Arquivo encontrado com sucesso! Abrindo "{xl_files[0]}"...'
-            else:
-                text = f'Mais de um arquivo com formato .xlsx encontrado. Abrindo o primeiro...'
-            msg = QMessageBox(self)
+            os.startfile(self.filename)
             msg.setIcon(QMessageBox.Icon.Information)
-            msg.setWindowTitle("Aviso")
-            msg.setText(text)
-            msg.exec()
+            msg.setWindowTitle("Sucesso")
+            msg.setText(f'Abrindo "{self.filename}"...')
+        msg.exec()
     
     def save_txt(self):
         files = os.listdir('.')
