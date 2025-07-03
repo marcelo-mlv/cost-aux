@@ -1,5 +1,5 @@
 import sys
-from PyQt6.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QSizePolicy, QSpacerItem, QPushButton, QMessageBox
+from PyQt6.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QSizePolicy, QSpacerItem, QPushButton, QMessageBox, QRadioButton, QButtonGroup, QDialog
 from PyQt6.QtGui import QPixmap
 from PyQt6.QtSvgWidgets import QSvgWidget
 from PyQt6.QtCore import Qt
@@ -12,6 +12,7 @@ class MainWindow(QWidget):
         super().__init__()
         self.setWindowTitle("cost-aux")
         self.setGeometry(100, 200, 300, 400)
+        self.filename = None
 
         self.init_ui()
 
@@ -48,6 +49,14 @@ class MainWindow(QWidget):
     
         ### On Click
         open_file_button.clicked.connect(self.find_file)
+        
+        ## Load File Button
+        load_file_button = QPushButton("Carregar Arquivo Excel")
+        load_file_button.setFixedWidth(200)
+        button_series.addWidget(load_file_button, alignment=Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
+
+        ### On Click
+        load_file_button.clicked.connect(self.load_file)
 
         ## Edit BOM Button
         bom_button = QPushButton("Editar BOM")
@@ -171,6 +180,56 @@ class MainWindow(QWidget):
         bom_layout.addLayout(footer_layout)
 
         self.setLayout(bom_layout)
+
+    def load_file(self):
+        files = os.listdir('.')
+        xl_files = [f for f in files if f.endswith('.xlsx')]
+        if not xl_files:
+            self.filename = None
+            
+            msg = QMessageBox(self)
+            msg.setIcon(QMessageBox.Icon.Warning)
+            msg.setWindowTitle("Erro")
+            msg.setText("Nenhum arquivo com formato .xlsx encontrado na pasta raiz.")
+            msg.exec()
+        elif len(xl_files) == 1:
+            self.filename = xl_files[0]
+            
+            msg = QMessageBox(self)
+            msg.setIcon(QMessageBox.Icon.Information)
+            msg.setWindowTitle("Sucesso")
+            msg.setText(f"Arquivo carregado com sucesso! \"{self.filename}\"")
+            msg.exec()
+        else:
+            choose_window = QMessageBox(self)
+            choose_window.setIcon(QMessageBox.Icon.Question)
+            choose_window.setWindowTitle("Escolha um arquivo")
+
+            dialog = QDialog(self)
+            dialog.setWindowTitle("Escolha um arquivo")
+            vbox = QVBoxLayout(dialog)
+            button_group = QButtonGroup(dialog)
+            radio_buttons = []
+            for i, file in enumerate(xl_files):
+                rb = QRadioButton(file)
+                button_group.addButton(rb, i)
+                vbox.addWidget(rb)
+                radio_buttons.append(rb)
+            radio_buttons[0].setChecked(True)
+            ok_button = QPushButton("OK")
+            vbox.addWidget(ok_button)
+            ok_button.clicked.connect(dialog.accept)
+            dialog.setLayout(vbox)
+            dialog.exec()
+            selected_id = button_group.checkedId()
+            self.filename = xl_files[selected_id]
+
+            msg = QMessageBox(self)
+            msg.setIcon(QMessageBox.Icon.Information)
+            msg.setWindowTitle("Sucesso")
+            msg.setText(f"Arquivo carregado com sucesso! \"{self.filename}\"")
+            msg.exec()
+
 
     def find_file(self):
         files = os.listdir('.')
