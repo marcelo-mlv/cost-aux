@@ -5,6 +5,7 @@ from PyQt6.QtSvgWidgets import QSvgWidget
 from PyQt6.QtCore import Qt
 
 import os
+from sheet_integration import save_tree_to_txt
 
 class MainWindow(QWidget):
     def __init__(self):
@@ -193,7 +194,14 @@ class MainWindow(QWidget):
             msg.exec()
     
     def save_txt(self):
-        pass
+        files = os.listdir('.')
+        xl_files = [f for f in files if f.endswith('.xlsx')]
+        save_tree_to_txt(xl_files[0])
+        msg = QMessageBox(self)
+        msg.setIcon(QMessageBox.Icon.Information)
+        msg.setWindowTitle("Aviso")
+        msg.setText("Arquivo salvo com sucesso em bom_tree.txt")
+        msg.exec()
 
     def add_item(self):
         pass
