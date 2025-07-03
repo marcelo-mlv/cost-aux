@@ -13,6 +13,7 @@ class MainWindow(QWidget):
         self.setWindowTitle("cost-aux")
         self.setGeometry(100, 200, 300, 400)
         self.filename = None
+        self.loaded_file_label = None
 
         self.init_ui()
 
@@ -70,6 +71,12 @@ class MainWindow(QWidget):
 
         layout.addSpacerItem(QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.MinimumExpanding))
 
+        # Loaded File Label
+        self.loaded_file_label = QLabel("Arquivo carregado: " + (self.filename if self.filename else "Nenhum arquivo carregado"))
+        layout.addWidget(self.loaded_file_label, alignment=Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignTop)
+
+        layout.addSpacerItem(QSpacerItem(10, 10, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum))
+
         # Footer
         footer_layout = QHBoxLayout()
 
@@ -89,6 +96,10 @@ class MainWindow(QWidget):
         layout.addLayout(footer_layout)
 
         self.setLayout(layout)
+
+    def update_loaded_file_label(self):
+        if self.loaded_file_label is not None:
+            self.loaded_file_label.setText("Arquivo carregado: " + (self.filename if self.filename else "Nenhum arquivo carregado"))
 
     def open_bom_window(self):
         if self.layout() is not None:
@@ -161,6 +172,12 @@ class MainWindow(QWidget):
 
         bom_layout.addSpacerItem(QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.MinimumExpanding))
 
+        # Loaded File Label
+        self.loaded_file_label = QLabel("Arquivo carregado: " + (self.filename if self.filename else "Nenhum arquivo carregado"))
+        bom_layout.addWidget(self.loaded_file_label, alignment=Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignTop)
+
+        bom_layout.addSpacerItem(QSpacerItem(10, 10, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum))
+
         # Footer
         footer_layout = QHBoxLayout()
 
@@ -229,6 +246,7 @@ class MainWindow(QWidget):
             msg.setWindowTitle("Sucesso")
             msg.setText(f"Arquivo carregado com sucesso! \"{self.filename}\"")
             msg.exec()
+        self.update_loaded_file_label()
 
 
     def find_file(self):
