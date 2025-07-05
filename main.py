@@ -1,11 +1,13 @@
-import sys
 from PyQt6.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QSizePolicy, QSpacerItem, QPushButton, QMessageBox, QRadioButton, QButtonGroup, QDialog
 from PyQt6.QtGui import QPixmap
 from PyQt6.QtSvgWidgets import QSvgWidget
 from PyQt6.QtCore import Qt
 
+import sys
 import os
+
 from sheet_integration import save_tree_to_txt
+from config import ButtonStyle, TextStyle, apply_button_style, apply_text_style
 
 class MainWindow(QWidget):
     def __init__(self):
@@ -25,11 +27,7 @@ class MainWindow(QWidget):
 
         # Main Text
         main_text = QLabel("America Ya :D")
-        font = main_text.font()
-        font.setPointSize(12)
-        font.setBold(True)
-        font.setFamily("Consolas")
-        main_text.setFont(font)
+        apply_text_style(main_text, TextStyle.TITLE)
         main_text.setContentsMargins(0, 10, 0, 10)
         layout.addWidget(main_text, alignment=Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignTop)
 
@@ -45,14 +43,16 @@ class MainWindow(QWidget):
 
         ## Open File Button
         open_file_button = QPushButton("Abrir Arquivo Excel")
+        apply_button_style(open_file_button, ButtonStyle.MAIN_WINDOW)
         open_file_button.setFixedWidth(200)
         button_series.addWidget(open_file_button, alignment=Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
-    
+
         ### On Click
         open_file_button.clicked.connect(self.find_file)
         
         ## Load File Button
         load_file_button = QPushButton("Carregar Arquivo Excel")
+        apply_button_style(load_file_button, ButtonStyle.MAIN_WINDOW)
         load_file_button.setFixedWidth(200)
         button_series.addWidget(load_file_button, alignment=Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
 
@@ -61,6 +61,7 @@ class MainWindow(QWidget):
 
         ## Edit BOM Button
         bom_button = QPushButton("Editar BOM")
+        apply_button_style(bom_button, ButtonStyle.MAIN_WINDOW)
         bom_button.setFixedWidth(200)
         button_series.addWidget(bom_button, alignment=Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
 
@@ -73,6 +74,7 @@ class MainWindow(QWidget):
 
         # Loaded File Label
         self.loaded_file_label = QLabel("Arquivo carregado: " + (self.filename if self.filename else "Nenhum arquivo carregado"))
+        apply_text_style(self.loaded_file_label, TextStyle.LABEL)
         layout.addWidget(self.loaded_file_label, alignment=Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignTop)
 
         layout.addSpacerItem(QSpacerItem(10, 10, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum))
@@ -90,6 +92,7 @@ class MainWindow(QWidget):
 
         ## Footer Label
         footer_label = QLabel("Formula ITA - CostAux v1.0")
+        apply_text_style(footer_label, TextStyle.FOOTER)
         footer_label.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
         footer_layout.addWidget(footer_label, stretch=5, alignment=Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignVCenter)
 
@@ -112,18 +115,17 @@ class MainWindow(QWidget):
         # Top Bar
         ## Return Button
         return_button = QPushButton("<<")
-        return_button.setFixedWidth(40)
+        apply_button_style(return_button, ButtonStyle.NAVIGATION)
+
+        ### On Click
         return_button.clicked.connect(self.init_ui)
+
         top_bar.addWidget(return_button, alignment=Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop)
 
         ## Main Text
         bom_label = QLabel("BOM Editor")
+        apply_text_style(bom_label, TextStyle.TITLE)
         bom_label.setAlignment(Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignTop)
-        font = bom_label.font()
-        font.setPointSize(16)
-        font.setBold(True)
-        font.setFamily("Consolas")
-        bom_label.setFont(font)
         top_bar.addWidget(bom_label, stretch=1, alignment=Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignTop)
 
         top_bar.setContentsMargins(0, 10, 0, 15)
@@ -134,6 +136,7 @@ class MainWindow(QWidget):
         
         # View BOM Button
         view_bom_button = QPushButton("Visualizar BOM")
+        apply_button_style(view_bom_button, ButtonStyle.MAIN_WINDOW)
         view_bom_button.setContentsMargins(0, 10, 0, 20)
         view_bom_button.setFixedWidth(200)
         button_series.addWidget(view_bom_button, alignment=Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignTop)
@@ -143,6 +146,7 @@ class MainWindow(QWidget):
 
         # Add Item Button
         add_item_button = QPushButton("Adicionar Item ao BOM")
+        apply_button_style(add_item_button, ButtonStyle.MAIN_WINDOW)
         add_item_button.setContentsMargins(0, 10, 0, 20)
         add_item_button.setFixedWidth(200)
         button_series.addWidget(add_item_button, alignment=Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignTop)
@@ -152,6 +156,7 @@ class MainWindow(QWidget):
 
         # Remove Item Button
         remove_item_button = QPushButton("Remover Item do BOM")
+        apply_button_style(remove_item_button, ButtonStyle.MAIN_WINDOW)
         remove_item_button.setContentsMargins(0, 10, 0, 20)
         remove_item_button.setFixedWidth(200)
         button_series.addWidget(remove_item_button, alignment=Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignTop)
@@ -161,6 +166,7 @@ class MainWindow(QWidget):
 
         # Save BOM Button
         save_bom_button = QPushButton("Salvar BOM em txt")
+        apply_button_style(save_bom_button, ButtonStyle.MAIN_WINDOW)
         save_bom_button.setContentsMargins(0, 10, 0, 20)
         save_bom_button.setFixedWidth(200)
         button_series.addWidget(save_bom_button, alignment=Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignTop)
@@ -174,6 +180,7 @@ class MainWindow(QWidget):
 
         # Loaded File Label
         self.loaded_file_label = QLabel("Arquivo carregado: " + (self.filename if self.filename else "Nenhum arquivo carregado"))
+        apply_text_style(self.loaded_file_label, TextStyle.LABEL)
         bom_layout.addWidget(self.loaded_file_label, alignment=Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignTop)
 
         bom_layout.addSpacerItem(QSpacerItem(10, 10, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum))
@@ -191,6 +198,7 @@ class MainWindow(QWidget):
 
         ## Footer Label
         footer_label = QLabel("Formula ITA - CostAux v1.0")
+        apply_text_style(footer_label, TextStyle.FOOTER)
         footer_label.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
         footer_layout.addWidget(footer_label, stretch=5, alignment=Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignVCenter)
 
@@ -233,7 +241,10 @@ class MainWindow(QWidget):
                 vbox.addWidget(rb)
                 radio_buttons.append(rb)
             radio_buttons[0].setChecked(True)
+            
             ok_button = QPushButton("OK")
+            apply_button_style(ok_button, ButtonStyle.DIALOG)
+
             vbox.addWidget(ok_button)
             ok_button.clicked.connect(dialog.accept)
             dialog.setLayout(vbox)
