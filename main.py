@@ -8,6 +8,7 @@ import os
 
 from sheet_integration import save_tree_to_txt
 from config import ButtonStyle, TextStyle, apply_button_style, apply_text_style
+from ui_components import StandardFooter
 
 class MainWindow(QWidget):
     def __init__(self):
@@ -79,24 +80,8 @@ class MainWindow(QWidget):
 
         layout.addSpacerItem(QSpacerItem(10, 10, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum))
 
-        # Footer
-        footer_layout = QHBoxLayout()
-
-        ## Footer Logo
-        logo_label = QLabel()
-        pixmap = QPixmap("assets/logo.png")
-        pixmap = pixmap.scaled(50, 50, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
-        logo_label.setPixmap(pixmap)
-        logo_label.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
-        footer_layout.addWidget(logo_label, stretch=2, alignment=Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignVCenter)
-
-        ## Footer Label
-        footer_label = QLabel("Formula ITA - CostAux v1.0")
-        apply_text_style(footer_label, TextStyle.FOOTER)
-        footer_label.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
-        footer_layout.addWidget(footer_label, stretch=5, alignment=Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignVCenter)
-
-        layout.addLayout(footer_layout)
+        footer = StandardFooter()
+        layout.addLayout(footer)
 
         self.setLayout(layout)
 
@@ -185,24 +170,8 @@ class MainWindow(QWidget):
 
         bom_layout.addSpacerItem(QSpacerItem(10, 10, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum))
 
-        # Footer
-        footer_layout = QHBoxLayout()
-
-        ## Footer Logo
-        logo_label = QLabel()
-        pixmap = QPixmap("assets/logo.png")
-        pixmap = pixmap.scaled(50, 50, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
-        logo_label.setPixmap(pixmap)
-        logo_label.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
-        footer_layout.addWidget(logo_label, stretch=2, alignment=Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignVCenter)
-
-        ## Footer Label
-        footer_label = QLabel("Formula ITA - CostAux v1.0")
-        apply_text_style(footer_label, TextStyle.FOOTER)
-        footer_label.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
-        footer_layout.addWidget(footer_label, stretch=5, alignment=Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignVCenter)
-
-        bom_layout.addLayout(footer_layout)
+        footer = StandardFooter()
+        bom_layout.addLayout(footer)
 
         self.setLayout(bom_layout)
 
