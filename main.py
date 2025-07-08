@@ -8,7 +8,7 @@ import os
 
 from sheet_integration import save_tree_to_txt
 from config import ButtonStyle, TextStyle, apply_button_style, apply_text_style
-from ui_components import StandardFooter
+from ui_components import StandardFooter, ButtonSeries
 
 class MainWindow(QWidget):
     def __init__(self):
@@ -39,35 +39,14 @@ class MainWindow(QWidget):
 
         layout.addSpacerItem(QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum))
         
-        # Menu Buttons
-        button_series = QVBoxLayout()
+        # Main Menu Buttons
+        button_list = [
+            ("Abrir Arquivo Excel", self.find_file),
+            ("Carregar Arquivo Excel", self.load_file),
+            ("Editar BOM", self.open_bom_window)
+        ]
 
-        ## Open File Button
-        open_file_button = QPushButton("Abrir Arquivo Excel")
-        apply_button_style(open_file_button, ButtonStyle.MAIN_WINDOW)
-        open_file_button.setFixedWidth(200)
-        button_series.addWidget(open_file_button, alignment=Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
-
-        ### On Click
-        open_file_button.clicked.connect(self.find_file)
-        
-        ## Load File Button
-        load_file_button = QPushButton("Carregar Arquivo Excel")
-        apply_button_style(load_file_button, ButtonStyle.MAIN_WINDOW)
-        load_file_button.setFixedWidth(200)
-        button_series.addWidget(load_file_button, alignment=Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
-
-        ### On Click
-        load_file_button.clicked.connect(self.load_file)
-
-        ## Edit BOM Button
-        bom_button = QPushButton("Editar BOM")
-        apply_button_style(bom_button, ButtonStyle.MAIN_WINDOW)
-        bom_button.setFixedWidth(200)
-        button_series.addWidget(bom_button, alignment=Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
-
-        ### On Click
-        bom_button.clicked.connect(self.open_bom_window)
+        button_series = ButtonSeries(button_list, ButtonStyle.MAIN_WINDOW)
 
         layout.addLayout(button_series)
 
@@ -116,48 +95,16 @@ class MainWindow(QWidget):
         top_bar.setContentsMargins(0, 10, 0, 15)
 
         bom_layout.addLayout(top_bar)
-        
-        button_series = QVBoxLayout()
-        
-        # View BOM Button
-        view_bom_button = QPushButton("Visualizar BOM")
-        apply_button_style(view_bom_button, ButtonStyle.MAIN_WINDOW)
-        view_bom_button.setContentsMargins(0, 10, 0, 20)
-        view_bom_button.setFixedWidth(200)
-        button_series.addWidget(view_bom_button, alignment=Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignTop)
 
-        ### On Click
-        view_bom_button.clicked.connect(self.view_bom)
+        # BOM Editor Buttons
+        button_list = [
+            ("Visualizar BOM", self.view_bom),
+            ("Adicionar Item ao BOM", self.add_item),
+            ("Remover Item do BOM", self.rm_item),
+            ("Salvar BOM em txt", self.save_txt)
+        ]
 
-        # Add Item Button
-        add_item_button = QPushButton("Adicionar Item ao BOM")
-        apply_button_style(add_item_button, ButtonStyle.MAIN_WINDOW)
-        add_item_button.setContentsMargins(0, 10, 0, 20)
-        add_item_button.setFixedWidth(200)
-        button_series.addWidget(add_item_button, alignment=Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignTop)
-
-        ### On Click
-        add_item_button.clicked.connect(self.add_item)
-
-        # Remove Item Button
-        remove_item_button = QPushButton("Remover Item do BOM")
-        apply_button_style(remove_item_button, ButtonStyle.MAIN_WINDOW)
-        remove_item_button.setContentsMargins(0, 10, 0, 20)
-        remove_item_button.setFixedWidth(200)
-        button_series.addWidget(remove_item_button, alignment=Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignTop)
-
-        ### On Click
-        remove_item_button.clicked.connect(self.rm_item)
-
-        # Save BOM Button
-        save_bom_button = QPushButton("Salvar BOM em txt")
-        apply_button_style(save_bom_button, ButtonStyle.MAIN_WINDOW)
-        save_bom_button.setContentsMargins(0, 10, 0, 20)
-        save_bom_button.setFixedWidth(200)
-        button_series.addWidget(save_bom_button, alignment=Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignTop)
-
-        ### On Click
-        save_bom_button.clicked.connect(self.save_txt)
+        button_series = ButtonSeries(button_list, ButtonStyle.MAIN_WINDOW)
 
         bom_layout.addLayout(button_series)
 

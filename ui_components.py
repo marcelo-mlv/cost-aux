@@ -1,8 +1,8 @@
-from PyQt6.QtWidgets import QHBoxLayout, QLabel
+from PyQt6.QtWidgets import QHBoxLayout, QLabel, QVBoxLayout, QPushButton
 from PyQt6.QtGui import QPixmap
 from PyQt6.QtCore import Qt
 
-from config import apply_text_style, TextStyle
+from config import apply_button_style, apply_text_style, ButtonStyle, TextStyle
 
 class StandardFooter(QHBoxLayout):
     def __init__(
@@ -27,3 +27,24 @@ class StandardFooter(QHBoxLayout):
         self.footer_label = QLabel(self.footer_text)
         apply_text_style(self.footer_label, TextStyle.FOOTER)
         self.addWidget(self.footer_label, stretch=5, alignment=Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignVCenter)
+
+class ButtonSeries(QVBoxLayout):
+    def __init__(self, button_list, style):
+        super().__init__()
+        self.style = style
+        self.button_list = button_list
+        self.setContentsMargins(0, 10, 0, 20)
+        self.setSpacing(10)
+        self.create_button_series()
+
+    def create_button_series(self):
+        button_layout = QVBoxLayout()
+
+        for label, callback in self.button_list:
+            button = QPushButton(label)
+            apply_button_style(button, self.style)
+            button.setFixedWidth(200)
+            button_layout.addWidget(button, alignment=Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
+            button.clicked.connect(callback)
+
+        self.addLayout(button_layout)
