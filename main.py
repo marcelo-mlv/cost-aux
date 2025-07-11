@@ -4,11 +4,11 @@ from PyQt6.QtSvgWidgets import QSvgWidget
 from PyQt6.QtCore import Qt
 
 import sys
-import os
 
 from sheet_integration import save_tree_to_txt
 from config import ButtonStyle, TextStyle, apply_button_style, apply_text_style
 from ui_components import StandardFooter, ButtonSeries
+from file_manager import FileManager
 
 class MainWindow(QWidget):
     def __init__(self):
@@ -123,8 +123,8 @@ class MainWindow(QWidget):
         self.setLayout(bom_layout)
 
     def load_file(self):
-        files = os.listdir('.')
-        xl_files = [f for f in files if f.endswith('.xlsx')]
+        file_manager = FileManager()
+        xl_files = file_manager.search_files_by_extension('.', '.xlsx')
         if not xl_files:
             self.filename = None
             
@@ -177,21 +177,22 @@ class MainWindow(QWidget):
 
 
     def find_file(self):
+        file_manager = FileManager()
         msg = QMessageBox(self)
         if not self.filename:
             msg.setIcon(QMessageBox.Icon.Warning)
             msg.setWindowTitle("Erro")
             msg.setText("Arquivo não definido. Carregue-o antes no menu principal.")
         else:
-            os.startfile(self.filename)
+            file_manager.start_file(self.filename)
             msg.setIcon(QMessageBox.Icon.Information)
             msg.setWindowTitle("Sucesso")
             msg.setText(f'Abrindo "{self.filename}"...')
         msg.exec()
     
     def save_txt(self):
-        files = os.listdir('.')
-        xl_files = [f for f in files if f.endswith('.xlsx')]
+        file_manager = FileManager()
+        xl_files = file_manager.search_files_by_extension('.', '.xlsx')
         save_tree_to_txt(xl_files[0])
         msg = QMessageBox(self)
         msg.setIcon(QMessageBox.Icon.Information)
