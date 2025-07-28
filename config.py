@@ -37,8 +37,8 @@ class StyleConfig:
             'font_family': 'Consolas'
         },
         TextStyle.SUBTITLE: {
-            'font_size': 14,
-            'font_weight': 'normal',
+            'font_size': 12,
+            'font_weight': 'bold',
             'font_family': 'Consolas'
         },
         TextStyle.LABEL: {

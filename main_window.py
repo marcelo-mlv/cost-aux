@@ -1,4 +1,4 @@
-from PyQt6.QtWidgets import QPushButton, QVBoxLayout, QWidget, QLabel, QMessageBox, QDialog, QRadioButton, QButtonGroup, QHBoxLayout, QSizePolicy, QSpacerItem, QStackedWidget
+from PyQt6.QtWidgets import QPushButton, QVBoxLayout, QWidget, QLabel, QMessageBox, QDialog, QRadioButton, QButtonGroup, QHBoxLayout, QSizePolicy, QSpacerItem, QStackedWidget, QScrollArea, QFrame
 from PyQt6.QtCore import Qt
 from PyQt6.QtSvgWidgets import QSvgWidget
 
@@ -19,9 +19,11 @@ class MainWindow(QWidget):
 
         self.start_menu = StartMenu(self)
         self.bom_window = BOMWindow(self)
+        self.bom_viewer = BOMViewer(self)
 
         self.stacked_widget.addWidget(self.start_menu)
         self.stacked_widget.addWidget(self.bom_window)
+        self.stacked_widget.addWidget(self.bom_viewer)
 
         self.stacked_widget.setCurrentWidget(self.start_menu)
 
@@ -36,6 +38,10 @@ class MainWindow(QWidget):
     def show_bom_window(self):
         self.bom_window.update_loaded_file_label()
         self.stacked_widget.setCurrentWidget(self.bom_window)
+
+    def show_bom_viewer(self):
+        self.bom_viewer.setup_pagination()
+        self.stacked_widget.setCurrentWidget(self.bom_viewer)
     
     def check_loaded_file(self):
         if not self.file_manager.does_file_exist(self.xl_filename):
@@ -301,4 +307,185 @@ class BOMWindow(QWidget):
         pass
 
     def view_bom(self):
-        pass
+        if not self.main_window.check_loaded_file():
+            return
+        
+        if not self.main_window.BOM_root:
+            msg = QMessageBox(self)
+            msg.setIcon(QMessageBox.Icon.Warning)
+            msg.setWindowTitle("Erro")
+            msg.setText("BOM não carregado. Carregue um arquivo primeiro.")
+            msg.exec()
+            return
+        
+        self.main_window.show_bom_viewer()
+
+
+class BOMViewer(QWidget):
+    def __init__(self, main_window):
+        super().__init__()
+        self.main_window = main_window
+        self.current_page = 0
+        self.subsystems = []
+        
+        self.init_ui()
+    
+    def init_ui(self):
+        main_layout = QVBoxLayout()
+        
+        # Top bar with navigation
+        top_bar = QHBoxLayout()
+        
+        # Return button
+        return_button = QPushButton("<<")
+        apply_button_style(return_button, ButtonStyle.NAVIGATION)
+        return_button.clicked.connect(self.main_window.show_bom_window)
+        top_bar.addWidget(return_button, alignment=Qt.AlignmentFlag.AlignLeft)
+        
+        # Title
+        title_label = QLabel("Visualização do BOM")
+        apply_text_style(title_label, TextStyle.TITLE)
+        title_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        top_bar.addWidget(title_label, stretch=1)
+        
+        main_layout.addLayout(top_bar)
+        
+        # Pagination controls
+        pagination_layout = QHBoxLayout()
+        
+        self.prev_button = QPushButton("◀ Anterior")
+        apply_button_style(self.prev_button, ButtonStyle.MAIN_WINDOW)
+        self.prev_button.clicked.connect(self.prev_page)
+        
+        self.page_label = QLabel("Página 0 de 0")
+        apply_text_style(self.page_label, TextStyle.LABEL)
+        self.page_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        
+        self.next_button = QPushButton("Próximo ▶")
+        apply_button_style(self.next_button, ButtonStyle.MAIN_WINDOW)
+        self.next_button.clicked.connect(self.next_page)
+        
+        pagination_layout.addWidget(self.prev_button)
+        pagination_layout.addWidget(self.page_label, stretch=1)
+        pagination_layout.addWidget(self.next_button)
+        
+        main_layout.addLayout(pagination_layout)
+        
+        # Scroll area for content
+        scroll_area = QScrollArea()
+        scroll_area.setWidgetResizable(True)
+        scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+        scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+        
+        self.content_widget = QWidget()
+        self.content_layout = QVBoxLayout(self.content_widget)
+        self.content_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
+        
+        scroll_area.setWidget(self.content_widget)
+        main_layout.addWidget(scroll_area)
+        
+        self.setLayout(main_layout)
+    
+    def setup_pagination(self):
+        """Prepara os dados para paginação baseado na árvore BOM"""
+
+        self.subsystems = list(self.main_window.BOM_root.children)
+        self.current_page = 0
+        
+        self.update_page()
+    
+    def update_page(self):
+        """Atualiza o conteúdo da página atual"""
+        for i in reversed(range(self.content_layout.count())):
+            child = self.content_layout.itemAt(i).widget()
+            if child:
+                child.setParent(None)
+        
+        if not self.subsystems:
+            no_data_label = QLabel("Nenhum dado de BOM disponível")
+            apply_text_style(no_data_label, TextStyle.LABEL)
+            no_data_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            self.content_layout.addWidget(no_data_label)
+        else:
+            if 0 <= self.current_page < len(self.subsystems):
+                subsystem = self.subsystems[self.current_page]
+                self.display_subsystem(subsystem)
+        
+        self.update_pagination_controls()
+    
+    def display_subsystem(self, subsystem):
+        """Exibe um subsistema com seus assemblies e parts"""
+
+        subsystem_title = QLabel(f"{subsystem.name}")
+        apply_text_style(subsystem_title, TextStyle.TITLE)
+        subsystem_title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.content_layout.addWidget(subsystem_title)
+        
+        subsystem_frame = QFrame()
+        subsystem_frame.setFrameStyle(QFrame.Shape.Box)
+        subsystem_layout = QVBoxLayout(subsystem_frame)
+        subsystem_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
+        
+        assemblies = list(subsystem.children)
+        
+        if not assemblies:
+            no_assemblies_label = QLabel("Nenhum assembly encontrado neste subsistema")
+            apply_text_style(no_assemblies_label, TextStyle.LABEL)
+            no_assemblies_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            subsystem_layout.addWidget(no_assemblies_label)
+        else:
+            for assembly in assemblies:
+                self.display_assembly(assembly, subsystem_layout)
+        
+        self.content_layout.addWidget(subsystem_frame)
+    
+    def display_assembly(self, assembly, parent_layout):
+        """Exibe um assembly com suas parts"""
+        
+        assembly_frame = QFrame()
+        assembly_frame.setFrameStyle(QFrame.Shape.StyledPanel)
+        assembly_layout = QVBoxLayout(assembly_frame)
+        assembly_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
+        
+        assembly_title = QLabel(assembly.name)
+        apply_text_style(assembly_title, TextStyle.SUBTITLE)
+        assembly_layout.addWidget(assembly_title)
+        
+        parts = list(assembly.children)
+        
+        if not parts:
+            no_parts_label = QLabel("  Nenhuma part encontrada")
+            apply_text_style(no_parts_label, TextStyle.LABEL)
+            assembly_layout.addWidget(no_parts_label)
+        else:
+            for _, part in enumerate(parts):
+                part_label = QLabel(f"  {part.name}")
+                apply_text_style(part_label, TextStyle.LABEL)
+                assembly_layout.addWidget(part_label)
+        
+        parent_layout.addWidget(assembly_frame)
+    
+    def update_pagination_controls(self):
+        """Atualiza os controles de paginação"""
+        total_pages = len(self.subsystems)
+        
+        if total_pages == 0:
+            self.page_label.setText("Nenhuma página")
+            self.prev_button.setEnabled(False)
+            self.next_button.setEnabled(False)
+        else:
+            self.page_label.setText(f"Página {self.current_page + 1} de {total_pages}")
+            self.prev_button.setEnabled(self.current_page > 0)
+            self.next_button.setEnabled(self.current_page < total_pages - 1)
+    
+    def prev_page(self):
+        """Vai para a página anterior"""
+        if self.current_page > 0:
+            self.current_page -= 1
+            self.update_page()
+    
+    def next_page(self):
+        """Vai para a próxima página"""
+        if self.current_page < len(self.subsystems) - 1:
+            self.current_page += 1
+            self.update_page()
