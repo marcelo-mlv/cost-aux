@@ -22,14 +22,15 @@ class MainWindow(QWidget):
         self.stacked_widget.addWidget(self.main_menu)
         self.stacked_widget.addWidget(self.bom_window)
 
-        self.stacked_widget.setCurrentWidget(self.main_menu)
+        self.stacked_widget.setCurrentWidget(self.start_menu)
 
         self.layout = QVBoxLayout()
         self.layout.addWidget(self.stacked_widget)
         self.setLayout(self.layout)
 
-    def show_main_menu(self):
-        self.stacked_widget.setCurrentWidget(self.main_menu)
+    def show_start_menu(self):
+        self.start_menu.update_loaded_file_label()
+        self.stacked_widget.setCurrentWidget(self.start_menu)
     
     def show_bom_window(self):
         self.stacked_widget.setCurrentWidget(self.bom_window)
@@ -193,7 +194,7 @@ class BOMWindow(QWidget):
         apply_button_style(return_button, ButtonStyle.NAVIGATION)
 
         ### On Click
-        return_button.clicked.connect(self.main_window.show_main_menu)
+        return_button.clicked.connect(self.main_window.show_start_menu)
 
         top_bar.addWidget(return_button, alignment=Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop)
 
