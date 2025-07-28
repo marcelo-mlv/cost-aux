@@ -50,8 +50,7 @@ def get_BOM_tree(filename):
     BOM_root = create_hierarchy(BOM_data)
     return BOM_root
 
-def save_tree_to_txt(filename):
-    BOM_root = get_BOM_tree(filename)
+def save_tree_to_txt(BOM_root):
     with open("bom_tree.txt", "w", encoding="utf-8") as f:
         for pre, _, node in RenderTree(BOM_root):
             f.write(f"{pre}{node.name}\n")

@@ -4,7 +4,7 @@ from PyQt6.QtSvgWidgets import QSvgWidget
 
 from config import apply_button_style, ButtonStyle, apply_text_style, TextStyle
 from ui_components import ButtonSeries, StandardFooter
-from sheet_integration import save_tree_to_txt, create_hyperlinks_for_assemblies, print_hyperlink_report
+from sheet_integration import save_tree_to_txt, create_hyperlinks_for_assemblies, print_hyperlink_report, get_BOM_tree
 
 class MainWindow(QWidget):
     def __init__(self, file_manager):
@@ -13,6 +13,7 @@ class MainWindow(QWidget):
         self.setWindowTitle("Main Menu")
         self.setGeometry(100, 200, 100, 200)
         self.xl_filename = None
+        self.BOM_root = None
 
         self.stacked_widget = QStackedWidget()
 
@@ -101,21 +102,18 @@ class StartMenu(QWidget):
     
     def load_file(self):
         xl_files = self.file_manager.search_files_by_extension('.', '.xlsx')
+        msg = QMessageBox(self)
+
         if not xl_files:
-            
-            msg = QMessageBox(self)
             msg.setIcon(QMessageBox.Icon.Warning)
             msg.setWindowTitle("Erro")
             msg.setText("Nenhum arquivo com formato .xlsx encontrado na pasta raiz.")
-            msg.exec()
         elif len(xl_files) == 1:
             self.main_window.xl_filename = xl_files[0]
             
-            msg = QMessageBox(self)
             msg.setIcon(QMessageBox.Icon.Information)
             msg.setWindowTitle("Sucesso")
             msg.setText(f"Arquivo carregado com sucesso! \"{self.main_window.xl_filename}\"")
-            msg.exec()
         else:
             choose_window = QMessageBox(self)
             choose_window.setIcon(QMessageBox.Icon.Question)
@@ -143,11 +141,11 @@ class StartMenu(QWidget):
             selected_id = button_group.checkedId()
             self.main_window.xl_filename = xl_files[selected_id]
 
-            msg = QMessageBox(self)
             msg.setIcon(QMessageBox.Icon.Information)
             msg.setWindowTitle("Sucesso")
             msg.setText(f"Arquivo carregado com sucesso! \"{self.main_window.xl_filename}\"")
-            msg.exec()
+        msg.exec()
+        self.get_BOM_tree_root()
         self.update_loaded_file_label()
 
     def update_loaded_file_label(self):
@@ -176,6 +174,9 @@ class StartMenu(QWidget):
             msg.exec()
         else:
             self.main_window.show_bom_window()
+    
+    def get_BOM_tree_root(self):
+        self.main_window.BOM_root = get_BOM_tree(self.main_window.xl_filename)
 
 class BOMWindow(QWidget):
     def __init__(self, main_window):
@@ -249,7 +250,7 @@ class BOMWindow(QWidget):
         if not self.main_window.check_loaded_file():
             return
         
-        save_tree_to_txt(self.main_window.xl_filename)
+        save_tree_to_txt(self.main_window.BOM_root)
         msg = QMessageBox(self)
         msg.setIcon(QMessageBox.Icon.Information)
         msg.setWindowTitle("Aviso")
