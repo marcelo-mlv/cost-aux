@@ -56,10 +56,6 @@ def save_tree_to_txt(filename):
         for pre, _, node in RenderTree(BOM_root):
             f.write(f"{pre}{node.name}\n")
 
-def refresh_BOM_hierarchies(filename):
-    df = get_BOM_df(filename)
-    BOM_root = create_hierarchy(df)
-
 def get_assembly_parts_mapping(filename):
     """
     Retorna um dicionário mapeando cada assembly para suas parts filhas.
