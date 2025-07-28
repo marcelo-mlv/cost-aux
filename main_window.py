@@ -4,7 +4,7 @@ from PyQt6.QtSvgWidgets import QSvgWidget
 
 from config import apply_button_style, ButtonStyle, apply_text_style, TextStyle
 from ui_components import ButtonSeries, StandardFooter
-from sheet_integration import save_tree_to_txt
+from sheet_integration import save_tree_to_txt, create_hyperlinks_for_assemblies, print_hyperlink_report
 
 class MainWindow(QWidget):
     def __init__(self, file_manager):
@@ -203,6 +203,7 @@ class BOMWindow(QWidget):
             ("Visualizar BOM", self.view_bom),
             ("Adicionar Item ao BOM", self.add_item),
             ("Remover Item do BOM", self.rm_item),
+            ("Criar Hyperlinks Assembly→Parts", self.create_hyperlinks),
             ("Salvar BOM em txt", self.save_txt)
         ]
 
@@ -233,6 +234,48 @@ class BOMWindow(QWidget):
         msg.setText("Arquivo salvo com sucesso em bom_tree.txt")
         msg.exec()
 
+    def create_hyperlinks(self):
+        xl_files = self.file_manager.search_files_by_extension('.', '.xlsx')
+        if not xl_files:
+            msg = QMessageBox(self)
+            msg.setIcon(QMessageBox.Icon.Warning)
+            msg.setWindowTitle("Erro")
+            msg.setText("Nenhum arquivo Excel encontrado.")
+            msg.exec()
+            return
+        
+        try:
+            # Criar hyperlinks
+            report = create_hyperlinks_for_assemblies(xl_files[0])
+            
+            if 'error' in report:
+                msg = QMessageBox(self)
+                msg.setIcon(QMessageBox.Icon.Critical)
+                msg.setWindowTitle("Erro")
+                msg.setText(f"Erro ao criar hyperlinks: {report['error']}")
+                msg.exec()
+            else:
+                # Mostrar relatório
+                msg = QMessageBox(self)
+                msg.setIcon(QMessageBox.Icon.Information)
+                msg.setWindowTitle("Hyperlinks Criados")
+                msg.setText(
+                    f"Hyperlinks criados com sucesso!\n\n"
+                    f"Assemblies processados: {report['assemblies_processed']}\n"
+                    f"Total de hyperlinks: {report['hyperlinks_created']}\n"
+                    f"Páginas não encontradas: {len(report['missing_sheets'])}"
+                )
+                msg.exec()
+                
+                # Imprimir relatório detalhado no console (opcional)
+                print_hyperlink_report(report)
+                
+        except Exception as e:
+            msg = QMessageBox(self)
+            msg.setIcon(QMessageBox.Icon.Critical)
+            msg.setWindowTitle("Erro")
+            msg.setText(f"Erro inesperado: {str(e)}")
+            msg.exec()
 
     def add_item(self):
         pass
