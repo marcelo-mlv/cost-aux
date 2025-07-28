@@ -33,7 +33,16 @@ class MainWindow(QWidget):
     
     def show_bom_window(self):
         self.stacked_widget.setCurrentWidget(self.bom_window)
-
+    
+    def check_loaded_file(self):
+        if not self.file_manager.does_file_exist(self.xl_filename):
+            msg = QMessageBox(self)
+            msg.setIcon(QMessageBox.Icon.Warning)
+            msg.setWindowTitle("Erro")
+            msg.setText(f"Arquivo movido ou deletado: {self.xl_filename}.")
+            msg.exec()
+            return False
+        return True
 
 class StartMenu(QWidget):
     def __init__(self, main_window):
@@ -226,8 +235,10 @@ class BOMWindow(QWidget):
         self.setLayout(bom_layout)
 
     def save_txt(self):
-        xl_files = self.file_manager.search_files_by_extension('.', '.xlsx')
-        save_tree_to_txt(xl_files[0])
+        if not self.main_window.check_loaded_file():
+            return
+        
+        save_tree_to_txt(self.xl_filename)
         msg = QMessageBox(self)
         msg.setIcon(QMessageBox.Icon.Information)
         msg.setWindowTitle("Aviso")
@@ -235,18 +246,12 @@ class BOMWindow(QWidget):
         msg.exec()
 
     def create_hyperlinks(self):
-        xl_files = self.file_manager.search_files_by_extension('.', '.xlsx')
-        if not xl_files:
-            msg = QMessageBox(self)
-            msg.setIcon(QMessageBox.Icon.Warning)
-            msg.setWindowTitle("Erro")
-            msg.setText("Nenhum arquivo Excel encontrado.")
-            msg.exec()
+        if not self.main_window.check_loaded_file():
             return
         
         try:
             # Criar hyperlinks
-            report = create_hyperlinks_for_assemblies(xl_files[0])
+            report = create_hyperlinks_for_assemblies(self.xl_filename)
             
             if 'error' in report:
                 msg = QMessageBox(self)
