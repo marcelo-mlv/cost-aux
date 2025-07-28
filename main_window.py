@@ -16,10 +16,10 @@ class MainWindow(QWidget):
 
         self.stacked_widget = QStackedWidget()
 
-        self.main_menu = StartMenu(self)
+        self.start_menu = StartMenu(self)
         self.bom_window = BOMWindow(self)
 
-        self.stacked_widget.addWidget(self.main_menu)
+        self.stacked_widget.addWidget(self.start_menu)
         self.stacked_widget.addWidget(self.bom_window)
 
         self.stacked_widget.setCurrentWidget(self.start_menu)
@@ -50,7 +50,6 @@ class StartMenu(QWidget):
         super().__init__()
         self.main_window = main_window
         self.file_manager = main_window.file_manager
-        self.xl_filename = main_window.xl_filename
         main_window.setWindowTitle("Main Menu")
         
         self.init_ui()
@@ -88,7 +87,7 @@ class StartMenu(QWidget):
         layout.addSpacerItem(QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.MinimumExpanding))
 
         # Loaded File Label
-        self.loaded_file_label = QLabel("Arquivo carregado: " + (self.xl_filename if self.xl_filename else "Nenhum arquivo carregado"))
+        self.loaded_file_label = QLabel("Arquivo carregado: " + (self.main_window.xl_filename if self.main_window.xl_filename else "Nenhum arquivo carregado"))
         apply_text_style(self.loaded_file_label, TextStyle.LABEL)
         layout.addWidget(self.loaded_file_label, alignment=Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignTop)
 
@@ -109,12 +108,12 @@ class StartMenu(QWidget):
             msg.setText("Nenhum arquivo com formato .xlsx encontrado na pasta raiz.")
             msg.exec()
         elif len(xl_files) == 1:
-            self.xl_filename = xl_files[0]
+            self.main_window.xl_filename = xl_files[0]
             
             msg = QMessageBox(self)
             msg.setIcon(QMessageBox.Icon.Information)
             msg.setWindowTitle("Sucesso")
-            msg.setText(f"Arquivo carregado com sucesso! \"{self.xl_filename}\"")
+            msg.setText(f"Arquivo carregado com sucesso! \"{self.main_window.xl_filename}\"")
             msg.exec()
         else:
             choose_window = QMessageBox(self)
@@ -141,30 +140,30 @@ class StartMenu(QWidget):
             dialog.setLayout(vbox)
             dialog.exec()
             selected_id = button_group.checkedId()
-            self.xl_filename = xl_files[selected_id]
+            self.main_window.xl_filename = xl_files[selected_id]
 
             msg = QMessageBox(self)
             msg.setIcon(QMessageBox.Icon.Information)
             msg.setWindowTitle("Sucesso")
-            msg.setText(f"Arquivo carregado com sucesso! \"{self.xl_filename}\"")
+            msg.setText(f"Arquivo carregado com sucesso! \"{self.main_window.xl_filename}\"")
             msg.exec()
         self.update_loaded_file_label()
 
     def update_loaded_file_label(self):
         if self.loaded_file_label is not None:
-            self.loaded_file_label.setText("Arquivo carregado: " + (self.xl_filename if self.xl_filename else "Nenhum arquivo carregado"))
+            self.loaded_file_label.setText("Arquivo carregado: " + (self.main_window.xl_filename if self.main_window.xl_filename else "Nenhum arquivo carregado"))
 
     def open_file(self):
         msg = QMessageBox(self)
-        if not self.xl_filename:
+        if not self.main_window.xl_filename:
             msg.setIcon(QMessageBox.Icon.Warning)
             msg.setWindowTitle("Erro")
             msg.setText("Arquivo não definido. Carregue-o antes no menu principal.")
         else:
-            self.file_manager.start_file(self.xl_filename)
+            self.file_manager.start_file(self.main_window.xl_filename)
             msg.setIcon(QMessageBox.Icon.Information)
             msg.setWindowTitle("Sucesso")
-            msg.setText(f'Abrindo "{self.xl_filename}"...')
+            msg.setText(f'Abrindo "{self.main_window.xl_filename}"...')
         msg.exec()
 
     def edit_bom(self):
@@ -175,7 +174,6 @@ class BOMWindow(QWidget):
         super().__init__()
         self.main_window = main_window
         self.file_manager = main_window.file_manager
-        self.xl_filename = main_window.xl_filename
         main_window.setWindowTitle("Edit BOM")
 
         self.init_ui()
@@ -224,7 +222,7 @@ class BOMWindow(QWidget):
         bom_layout.addSpacerItem(QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.MinimumExpanding))
 
         # Loaded File Label
-        self.loaded_file_label = QLabel("Arquivo carregado: " + (self.xl_filename if self.xl_filename else "Nenhum arquivo carregado"))
+        self.loaded_file_label = QLabel("Arquivo carregado: " + (self.main_window.xl_filename if self.main_window.xl_filename else "Nenhum arquivo carregado"))
         apply_text_style(self.loaded_file_label, TextStyle.LABEL)
         bom_layout.addWidget(self.loaded_file_label, alignment=Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignTop)
 
@@ -252,7 +250,7 @@ class BOMWindow(QWidget):
         
         try:
             # Criar hyperlinks
-            report = create_hyperlinks_for_assemblies(self.xl_filename)
+            report = create_hyperlinks_for_assemblies(self.main_window.xl_filename)
             
             if 'error' in report:
                 msg = QMessageBox(self)
