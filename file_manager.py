@@ -6,6 +6,8 @@ class FileManager:
         return files
 
     def does_file_exist(self, file_path):
+        if not file_path:
+            return False
         return os.path.exists(file_path)
     
     def start_file(self, file_path):

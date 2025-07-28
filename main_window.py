@@ -168,7 +168,14 @@ class StartMenu(QWidget):
         msg.exec()
 
     def edit_bom(self):
-        self.main_window.show_bom_window()
+        if not self.main_window.xl_filename:
+            msg = QMessageBox(self)
+            msg.setIcon(QMessageBox.Icon.Warning)
+            msg.setWindowTitle("Erro")
+            msg.setText("Arquivo não definido. Carregue-o antes no menu principal.")
+            msg.exec()
+        else:
+            self.main_window.show_bom_window()
 
 class BOMWindow(QWidget):
     def __init__(self, main_window):
