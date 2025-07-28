@@ -33,6 +33,7 @@ class MainWindow(QWidget):
         self.stacked_widget.setCurrentWidget(self.start_menu)
     
     def show_bom_window(self):
+        self.bom_window.update_loaded_file_label()
         self.stacked_widget.setCurrentWidget(self.bom_window)
     
     def check_loaded_file(self):
@@ -233,11 +234,15 @@ class BOMWindow(QWidget):
 
         self.setLayout(bom_layout)
 
+    def update_loaded_file_label(self):
+        if self.loaded_file_label is not None:
+            self.loaded_file_label.setText("Arquivo carregado: " + (self.main_window.xl_filename if self.main_window.xl_filename else "Nenhum arquivo carregado"))
+
     def save_txt(self):
         if not self.main_window.check_loaded_file():
             return
         
-        save_tree_to_txt(self.xl_filename)
+        save_tree_to_txt(self.main_window.xl_filename)
         msg = QMessageBox(self)
         msg.setIcon(QMessageBox.Icon.Information)
         msg.setWindowTitle("Aviso")
