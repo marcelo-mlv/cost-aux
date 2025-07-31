@@ -133,9 +133,13 @@ def create_hyperlinks_for_assemblies(filename):
                     if part_name in workbook.sheetnames:
                         worksheet[item_order_address].value = (i+1) * 10
 
-                        # Criar hyperlink para a página da part
-                        worksheet[cellpart_address].hyperlink = f"#{part_name}!A1"
-                        worksheet[cellpart_address].value = part_name
+                        # Criar hyperlink para a página da part (sheets)
+                        worksheet[cellpart_address].value = f'=HYPERLINK("#{part_name}!A1", "{part_name}")'
+                        
+                        # Criar hyperlink para a página da part (excel)
+                        # worksheet[cellpart_address].hyperlink = f"#{part_name}!A1"
+                        # worksheet[cellpart_address].value = part_name
+                        
                         worksheet[cellpart_address].style = "Hyperlink"
                         assembly_info['hyperlinks_created'] += 1
                         report['hyperlinks_created'] += 1
